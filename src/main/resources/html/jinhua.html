@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>搓囍科技有限公司</title>
+    <script src="/jquery/jquery.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="welcome" style="display: block">
+    <div align="center"><h1>欢迎进入搓喜金花王者争霸赛</h1></div>
+    <div align="center">
+        <label>请输入您的名字：</label>
+        <input id="name">
+        <button id="enterBtn">进入房间列表</button>
+    </div>
+</div>
+<div id="roomlistDiv" style="display: none">
+    <div align="center"><h1>请选择房间</h1></div>
+    <div>
+    <ul id="roomlist">
+
+    </ul>
+    </div>
+    <div align="center">
+        <label>房间名:</label>
+        <input id="roomName" type="text">
+        <button id="createRoomBtn">创建房间</button>
+    </div>
+</div>
+<div id="play" style="display: none">
+    <div>
+        <textarea id="jhtable" rows="40" cols="200"></textarea>
+    </div>
+    <div id="operationPane">
+        <button id="dealbtn" disabled="disabled">发牌</button>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ws = null;
+        $("#enterBtn").click(function () {
+            var username = $("#name").val();
+            if (username == null || username == "") {
+                alert("请输入用户名");
+                return;
+            }
+
+            var form = new FormData()
+            form.append("username", username);
+            $.ajax({
+                url: '/login',
+                processData: false,
+                type: 'POST',
+                contentType: false,
+                data: form,
+                success: function(data) {
+                    if (data.code == 200) {
+                        $("#welcome").hide();
+                        $("#roomlistDiv").show();
+                        renderRoomlist();
+                    }
+
+                }
+            });
+        });
+
+        function renderRoomlist() {
+            $.ajax({
+                url: '/roomlist',
+                type: 'GET',
+                success: function (data) {
+                    var list = data.data;
+                    $("#roomlist").html("");
+                    $.each(list, function (ky, vl) {
+                        $("#roomlist").append("<li><a class='dynamicHref' value='" + vl +"' href='javascript:void(0);'>" + ky + "</a>");
+                    })
+
+                    $(document).on("click", ".dynamicHref", function() {
+                        openroomNoid()
+                    });
+                }
+            });
+        }
+
+        $("#dealbtn").click(function () {
+            var msg = {"event": "DEAL_CARD"}
+            ws.send(JSON.stringify(msg));
+        });
+
+        $("#createRoomBtn").click(function() {
+            var roomName = $("#roomName").val();
+            var form = new FormData();
+            form.append("roomname", roomName);
+            $.ajax({
+                url: '/createroom',
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                data: form,
+                success: function(data) {
+                    var roomId = data.roomId;
+                    openroom(roomId);
+                    $("#dealbtn").attr("disabled", false);
+                }
+            })
+        });
+
+        function openroomNoid() {
+            var roomId = event.target.getAttribute("value");
+            openroom(parseInt(roomId));
+        }
+
+        function openroom(roomId) {
+
+            var form = new FormData();
+            form.append("roomId", roomId);
+            $.ajax({
+                url: '/enterroom',
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                data: form,
+                success: function(data) {
+                    if (data.code == 200) {
+                        $("#roomlistDiv").hide();
+                        $("#play").show();
+                        ws = new WebSocket("ws://localhost:8080/websocket/jinhuaroom");
+                        initWebsocket();
+                        addMsg("欢迎光临: " + data.username + "\n");
+                    }
+                }
+            })
+        }
+
+        function initWebsocket() {
+            ws.onopen = function (ev) {
+                addMsg("初始化websocket成功\n");
+            }
+
+            ws.onmessage = function (ev) {
+                var msg = ev.data;
+                msg = JSON.parse(msg)
+                if (msg.type == "WELCOME") {
+                    addMsg(msg.msg);
+                }
+            }
+
+        }
+        
+
+        function addMsg(newmsg) {
+            var old = $("#jhtable").val()
+            $("#jhtable").val(old + newmsg);
+        }
+    })
+</script>
+</body>
+</html>

@@ -48,17 +48,17 @@ public class Poker {
 
         List<Player> players = new ArrayList<Player>();
 
-        Player zhongrui = new Player("钟锐", 100, 1);
-        Player lixiao = new Player("李骁", 100, 2);
-        Player huangqiyu = new Player("黄启宇", 100, 3);
-        Player tangming = new Player("唐明", 100, 4);
-        Player mazong = new Player("马总", 100, 5);
-        Player wanghu = new Player("王虎", 100, 6);
-        Player ningshaopeng = new Player("宁绍鹏", 100, 7);
-        Player chenyunfeng = new Player("陈云风", 100, 8);
-        Player wuyuwei = new Player("吴煜玮", 100, 9);
-        Player yangyixiao = new Player("杨一笑", 100, 10);
-        Player pengqiling = new Player("彭麒菱", 100, 11);
+        Player zhongrui = new Player("钟锐", 100);
+        Player lixiao = new Player("李骁", 100);
+        Player huangqiyu = new Player("黄启宇", 100);
+        Player tangming = new Player("唐明", 100);
+        Player mazong = new Player("马总", 100);
+        Player wanghu = new Player("王虎", 100);
+        Player ningshaopeng = new Player("宁绍鹏", 100);
+        Player chenyunfeng = new Player("陈云风", 100);
+        Player wuyuwei = new Player("吴煜玮", 100);
+        Player yangyixiao = new Player("杨一笑", 100);
+        Player pengqiling = new Player("彭麒菱", 100);
         players.add(zhongrui);
         players.add(lixiao);
         players.add(huangqiyu);

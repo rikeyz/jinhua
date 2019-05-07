@@ -28,11 +28,4 @@ public class Card {
         this.numEnum = numEnum;
     }
 
-    public static void main(String[] args) {
-        String s = "♠️♥️♣️";
-        System.out.println(Integer.toHexString((int)s.charAt(0)));
-        System.out.println(Integer.toHexString((int)s.charAt(1)));
-        System.out.println(Integer.toHexString((int)s.charAt(2)));
-
-    }
 }

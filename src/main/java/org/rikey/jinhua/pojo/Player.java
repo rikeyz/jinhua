@@ -11,12 +11,9 @@ public class Player {
 
     private int chip;
 
-    private int tablePosition;
-
-    public Player(String userName, int chip, int tablePosition) {
+    public Player(String userName, int chip) {
         this.userName = userName;
         this.chip = chip;
-        this.tablePosition = tablePosition;
         this.cards = new ArrayList<Card>();
     }
 
@@ -44,24 +41,19 @@ public class Player {
         this.chip = chip;
     }
 
-    public int getTablePosition() {
-        return tablePosition;
-    }
-
-    public void setTablePosition(int tablePosition) {
-        this.tablePosition = tablePosition;
-    }
-
-    @Override
-    public String toString() {
+    public String cardsString() {
         StringBuilder sb = new StringBuilder();
         for (Card card : cards) {
             sb.append(card.getCardNum().getCardStr())
-                    .append(":")
                     .append(card.getNumEnum().getNumStr())
                     .append(" ");
         }
 
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return this.userName;
     }
 }
