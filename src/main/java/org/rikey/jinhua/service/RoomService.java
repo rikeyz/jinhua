@@ -30,6 +30,10 @@ public class RoomService {
         return roomId;
     }
 
+    public JinhuaRoom getRoom(int idx) {
+        return rooms.get(idx);
+    }
+
     public void enterRoom(int roomId, Player player) {
         rooms.get(roomId).enter(player);
     }
