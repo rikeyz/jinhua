@@ -1,0 +1,40 @@
+<html lang="zh_CN">
+<head>
+    <title>Upload test</title>
+    <meta charset="UTF-8">
+    <script src="/jquery/jquery.js" type="text/javascript"></script>
+</head>
+<body>
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file"  name="file">
+    <input type="submit" value="上传">
+</form>
+
+<div>
+    <label>选择文件</label>
+    <input type="file" id="ajaxfile">
+    <button id="ajaxsubmit">提交</button>
+</div>
+<script type="text/javascript">
+$(document).ready(
+    function() {
+        $("#ajaxsubmit").click(function () {
+            uploadedFile = $("#ajaxfile")[0].files[0]
+            var formdata = new FormData();
+            formdata.append("file", uploadedFile);
+            $.ajax({
+                url: '/uploadRaw',
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                data: formdata,
+                success: function (data) {
+                    alert(data);
+                }
+            });
+        });
+    }
+)    
+</script>
+</body>
+</html>
