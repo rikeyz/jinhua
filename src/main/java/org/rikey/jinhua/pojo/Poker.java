@@ -20,6 +20,9 @@ public class Poker extends SignalSponsorAndReactorAdapter {
     @Getter
     private int current = 0;
 
+    /**
+     * 是否已开牌
+     */
     @Getter
     @Setter
     private boolean isDeal = false;

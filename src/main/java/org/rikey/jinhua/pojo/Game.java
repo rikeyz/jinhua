@@ -1,11 +1,14 @@
 package org.rikey.jinhua.pojo;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
 
+@Slf4j
 public class Game {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
 
         List<Player> players = new ArrayList<Player>();
 
@@ -43,18 +46,45 @@ public class Game {
             Signal s = new Signal();
             s.setRound(round);
 
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("\n倒牌：");
-            int cutPos = scanner.nextInt();
             s.setSignal(Round.BEGIN);
             round.goTo(s);
+
+            System.out.println("倒牌前：");
             for (Card card : poker.getPorkerCards()) {
                 System.out.printf(card.getCardNum().getCardStr() + card.getNumEnum().getNumStr() + " - ");
             }
-            System.out.println("curpos: " + poker.getCurrent());
+            System.out.println("");
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("\n倒牌：");
+            int cutPos = scanner.nextInt();
+
             s.setSignal(Round.CUT);
             round.setCutNum(cutPos);
             round.goTo(s);
+
+            System.out.println("倒牌后：");
+            for (Card card : poker.getPorkerCards()) {
+                System.out.printf(card.getCardNum().getCardStr() + card.getNumEnum().getNumStr() + " - ");
+            }
+            System.out.println("");
+
+            //耍魔术
+            Card a1 = new Card(CardEnum.SPADE, NumEnum.ACE);
+            Card a2 = new Card(CardEnum.HEART, NumEnum.ACE);
+            Card a3 = new Card(CardEnum.CLUB, NumEnum.ACE);
+            zhongrui.getHand().cheat(poker,a1, a2, a3);
+
+            Card p2 = new Card(CardEnum.SPADE, NumEnum.FIVE);
+            Card p3 = new Card(CardEnum.HEART, NumEnum.THREE);
+            Card p5 = new Card(CardEnum.CLUB, NumEnum.TWO);
+            lixiao.getHand().cheat(poker,p2, p3, p5);
+
+            Card k1 = new Card(CardEnum.SPADE, NumEnum.KING);
+            Card k2 = new Card(CardEnum.HEART, NumEnum.KING);
+            Card k3 = new Card(CardEnum.CLUB, NumEnum.KING);
+            mazong.getHand().cheat(poker,k1, k2, k3);
+
 
             s.setSignal(Round.DEAL);
             while (!round.isAllHandValid()) {
@@ -66,7 +96,7 @@ public class Game {
                 System.out.println(player.getUserName() + ": " + player.toString());
             }
 
-
+            System.out.println("*********************************************");
 
         }
 

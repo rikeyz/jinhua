@@ -39,13 +39,15 @@ public class Player extends SignalSponsorAndReactorAdapter {
     public void reactDeal(Signal signal) throws Exception{
         Round round =signal.getRound();
         Poker poker = round.getPoker();
-        if (!poker.isDeal() && round.getBanker().getTablePosition() >= tablePosition){
+        if (!poker.isDeal() && tablePosition != (round.getBanker().getTablePosition()+1)%round.getAllPlayers().size() ){
             log.debug("skip deal");
         }else {
             if(!poker.isDeal()){
                 poker.setDeal(true);
             }
-            this.hand.acceptCard(poker.deal());
+            if(hand.getCards().size()<3) {
+                this.hand.acceptCard(poker.deal());
+            }
         }
     }
 
