@@ -1,40 +1,75 @@
 package org.rikey.jinhua.pojo;
 
 
-
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Observable;
+import java.util.*;
 
-public class Round extends Observable {
+public class Round extends SignalSponsorAndReactorAdapter {
 
     public static final int BEGIN = 1;
-    public static final int DEAL = 2;
-    public static final int DEAL_FINISH = 3;
-    public static final int END = 4;
+    public static final int CUT = 2;
+    public static final int DEAL = 3;
+    public static final int DEAL_FINISH = 4;
+    public static final int END = 5;
 
+    @Setter
+    @Getter
+    private TreeMap<Integer, Player> allPlayers = new TreeMap<>();
 
-    public void join(Player player){
-        addObserver(player);
-    }
+    /**
+     * 庄家
+     */
+    @Getter
+    @Setter
+    private Player banker;
 
-    public void join(Collection<Player> players){
-        for (Iterator<Player> playerIterator = players.iterator(); playerIterator.hasNext();){
-            addObserver(playerIterator.next());
+    /**
+     * 当前玩家
+     */
+    @Setter
+    @Getter
+    private Player speaker;
+
+    @Getter
+    @Setter
+    private int cutNum;
+
+    @Getter
+    private Poker poker;
+
+    public void join(List<Player> players) {
+        for (int i = players.size() - 1 ; i >= 0; i--) {
+            allPlayers.put(players.get(i).getTablePosition(), players.get(i));
+            addObserver(players.get(i));
         }
     }
 
-    public void exit(Player player){
+    public void exit(Player player) {
         deleteObserver(player);
+        allPlayers.remove(player.getTablePosition());
     }
 
-    public void goTo(RoundSignal signal){
-        setChanged();
-        notifyObservers(signal);
+    public void addPoker(Poker poker) {
+        this.poker = poker;
+        addObserver(poker);
+    }
+
+    public void clearPoker(Poker poker) {
+        this.poker = null;
+        deleteObserver(poker);
+    }
+
+    public boolean isAllHandValid(){
+        boolean allValid = true;
+        for (Iterator<Map.Entry<Integer, Player>> iterator=allPlayers.entrySet().iterator();iterator.hasNext();){
+            allValid = allValid && iterator.next().getValue().getHand().isValid();
+            if (!allValid){
+                return false;
+            }
+        }
+        return true;
     }
 
 }

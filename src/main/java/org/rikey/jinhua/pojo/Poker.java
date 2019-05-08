@@ -1,21 +1,37 @@
 package org.rikey.jinhua.pojo;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 
-public class Poker {
-    private List<Card> porkerCards = null;
+public class Poker extends SignalSponsorAndReactorAdapter {
 
+    @Getter
+    private LinkedList<Card> porkerCards = null;
+
+    @Getter
     private int cardsNum = 0;
 
-    private int current=0;
+    @Getter
+    private int usedNum = 0;
+
+    @Getter
+    private int current = 0;
+
+    @Getter
+    @Setter
+    private boolean isDeal = false;
+
 
     public Poker() {
-        porkerCards = new ArrayList<Card>();
+        porkerCards = new LinkedList<>();
         for (NumEnum numEnum : NumEnum.values()) {
             for (CardEnum cardsEnum : CardEnum.values()) {
                 Card card = new Card(cardsEnum, numEnum);
                 porkerCards.add(card);
-                this.cardsNum ++;
+                this.cardsNum++;
             }
         }
     }
@@ -23,86 +39,52 @@ public class Poker {
     public void shuffle() {
         Random rnd = new Random(System.currentTimeMillis());
         Collections.shuffle(porkerCards, rnd);
-        current = 0;
     }
 
-    public void cutCards(int cutPos) {
-        current = cutPos;
+    public void cutCards(int cutPos) throws Exception{
+        if(cutPos >= cardsNum){
+            throw new Exception("cut too much");
+        }
+        for (int i = cutPos; i > 0; i--) {
+            Card card = porkerCards.pollFirst();
+            porkerCards.offerLast(card);
+        }
     }
 
-    public Card deal() {
-        return porkerCards.get(current++ % cardsNum);
+    public Card deal() throws Exception{
+        if (porkerCards != null) {
+            cardsNum--;
+            usedNum++;
+            return porkerCards.pollFirst();
+        }else {
+            throw new Exception("poker has not init");
+        }
     }
 
-    public List<Card> getPorkerCards() {
-        return porkerCards;
-    }
-
-    public int getCurrent() {
-        return current;
-    }
-
-    public static void main(String[] args) {
-        Poker poker = new Poker();
-        poker.shuffle();
-
-        List<Player> players = new ArrayList<Player>();
-
-        Player zhongrui = new Player("钟锐", 100, 1);
-        Player lixiao = new Player("李骁", 100, 2);
-        Player huangqiyu = new Player("黄启宇", 100, 3);
-        Player tangming = new Player("唐明", 100, 4);
-        Player mazong = new Player("马总", 100, 5);
-        Player wanghu = new Player("王虎", 100, 6);
-        Player ningshaopeng = new Player("宁绍鹏", 100, 7);
-        Player chenyunfeng = new Player("陈云风", 100, 8);
-        Player wuyuwei = new Player("吴煜玮", 100, 9);
-        Player yangyixiao = new Player("杨一笑", 100, 10);
-        Player pengqiling = new Player("彭麒菱", 100, 11);
-        players.add(zhongrui);
-        players.add(lixiao);
-        players.add(huangqiyu);
-        players.add(tangming);
-        players.add(mazong);
-        players.add(wanghu);
-        players.add(ningshaopeng);
-        players.add(chenyunfeng);
-        players.add(wuyuwei);
-        players.add(yangyixiao);
-        players.add(pengqiling);
-
-
-
-
-        while(true) {
-            Scanner scanner = new Scanner(System.in);
-            for (Card card : poker.getPorkerCards()) {
-                System.out.printf(card.getCardNum().getCardStr() + card.getNumEnum().getNumStr() + " - ");
-            }
-            System.out.println("\n倒牌：");
-            int cutPos = scanner.nextInt();
-            poker.shuffle();
-            poker.cutCards(cutPos);
-
-            System.out.println("curpos: " + poker.getCurrent());
-            for (int i = 0; i < 3; i++) {
-                for (Player player : players) {
-                    player.acceptCard(poker.deal());
+    public Card getSpecified(CardEnum cardEnum, NumEnum numEnum) throws Exception {
+        if (porkerCards != null) {
+            for (Iterator<Card> iterator = porkerCards.iterator(); iterator.hasNext(); ) {
+                Card card = iterator.next();
+                if (card.getNumEnum() == numEnum && card.getCardNum() == cardEnum) {
+                    iterator.remove();
+                    cardsNum--;
+                    usedNum++;
+                    return card;
                 }
             }
-
-            for (Player player : players) {
-                System.out.println(player.getUserName() + ": " + player.toString());
-            }
-
-            for (Player player : players) {
-                player.clearCards();
-            }
-
+        } else {
+            throw new Exception("poker has not init");
         }
-
+        throw new Exception("no such card");
     }
 
+    @Override
+    public void reactBegin(Signal signal) {
+        shuffle();
+    }
 
-
+    @Override
+    public void reactCut(Signal signal) throws Exception{
+        cutCards(signal.getRound().getCutNum());
+    }
 }

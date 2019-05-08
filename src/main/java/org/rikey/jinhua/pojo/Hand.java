@@ -38,6 +38,18 @@ public class Hand extends DefaultHandTypeResolver {
     @Setter
     private boolean isNoSee = true;
 
+    @Getter
+    @Setter
+    private boolean isCheat = false;
+
+    public boolean isValid(){
+        if (cards.size()==3){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
     public void sort(){
         sortedCards = new ArrayList<Card>();
         Map<Integer, Card> cardNumMap = new TreeMap<Integer, Card>();

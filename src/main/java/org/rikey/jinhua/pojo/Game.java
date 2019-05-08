@@ -1,15 +1,11 @@
 package org.rikey.jinhua.pojo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Game {
 
 
     public static void main(String[] args) {
-        Poker poker = new Poker();
-        poker.shuffle();
 
         List<Player> players = new ArrayList<Player>();
 
@@ -35,35 +31,35 @@ public class Game {
         players.add(wuyuwei);
         players.add(yangyixiao);
         players.add(pengqiling);
-        Round round = new Round();
-        round.join(players);
+
 
         while (true) {
+            Poker poker = new Poker();
+            Round round = new Round();
+            round.setBanker(players.get(new Random().nextInt(players.size())));
+            System.out.println("庄家:"+round.getBanker().getUserName()+"|"+round.getBanker().getTablePosition());
+            round.join(players);
+            round.addPoker(poker);
+            Signal s = new Signal();
+            s.setRound(round);
+
             Scanner scanner = new Scanner(System.in);
+            System.out.println("\n倒牌：");
+            int cutPos = scanner.nextInt();
+            s.setSignal(Round.BEGIN);
+            round.goTo(s);
             for (Card card : poker.getPorkerCards()) {
                 System.out.printf(card.getCardNum().getCardStr() + card.getNumEnum().getNumStr() + " - ");
             }
-            System.out.println("\n倒牌：");
-            int cutPos = scanner.nextInt();
-            poker.shuffle();
-            poker.cutCards(cutPos);
-
             System.out.println("curpos: " + poker.getCurrent());
-
-
-            RoundSignal s = new RoundSignal();
-            s.setPoker(poker);
-            s.setSignal(Round.BEGIN);
+            s.setSignal(Round.CUT);
+            round.setCutNum(cutPos);
             round.goTo(s);
 
-            for (int i = 0; i < 3; i++) {
-                s = new RoundSignal();
-                s.setPoker(poker);
-                s.setSignal(Round.DEAL);
+            s.setSignal(Round.DEAL);
+            while (!round.isAllHandValid()) {
                 round.goTo(s);
             }
-            s = new RoundSignal();
-            s.setPoker(poker);
             s.setSignal(Round.DEAL_FINISH);
             round.goTo(s);
             for (Player player : players) {
