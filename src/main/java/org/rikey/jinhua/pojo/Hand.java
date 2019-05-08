@@ -51,10 +51,10 @@ public class Hand extends DefaultHandTypeResolver {
     }
 
     public void cheat(Poker poker, Card card1, Card card2, Card card3) throws Exception{
-        Card c1 = poker.getSpecified(card1.getCardNum(),card1.getNumEnum());
-        Card c2 = poker.getSpecified(card2.getCardNum(),card2.getNumEnum());
-        Card c3 = poker.getSpecified(card3.getCardNum(),card3.getNumEnum());
         if (cards.isEmpty()){
+            Card c1 = poker.getSpecified(card1.getCardNum(),card1.getNumEnum());
+            Card c2 = poker.getSpecified(card2.getCardNum(),card2.getNumEnum());
+            Card c3 = poker.getSpecified(card3.getCardNum(),card3.getNumEnum());
             cards.add(c1);
             cards.add(c2);
             cards.add(c3);
